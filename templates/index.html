@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div id="homepage-address">
+	<h1>I live at...</h1>
+
+	<input id="address" class="form-control" type="text"
+		name="address"
+		placeholder="415 N. Main St., Hannibal, Missouri">
+
+	<button id="use-my-address">I&rsquo;m at home, use my phone&rsquo;s location</button>
+</div>
+
+<div id="homepage-district" style="display: none;">
+	<h1>I live in <span class="state"></span>&rsquo;s <span class="district"></span> Congressional District.</h1>
+
+	<p>Based on: <span class="address"></span>
+	<br>
+		<a href="#" onclick="$('#homepage-district').hide(); $('#homepage-address').show(); return false;">Change</a>
+		| <a id="district-link" href="#">See on a Map</a>
+	</p>
+</div>
+
+<div id="homepage-topic">
+	<h1>I want to phone Congress about...</h1>
+
+	<select id="topic" class="form-control">
+		<option value="">(Select Topic)</option>
+		<option value="X">Nomination of Jeff Sessions</option>
+	</select>
+
+	<button id="topic-go" class="btn btn-success" style="display: block; margin-top: 5px;">Next &raquo;</button>
+</div>
+
+{% endblock %}
