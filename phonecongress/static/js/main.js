@@ -132,7 +132,7 @@ function onTopicSubmit() {
     url: "/_action",
     data: {
       campaign: topic,
-      cd: geocode_data.cd
+      user: JSON.stringify(geocode_data)
     },
     success: function(res) {
       //console.log(res);
