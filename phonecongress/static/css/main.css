@@ -46,7 +46,7 @@ h1 {
 }
 
 @media screen and (max-width: 1024px) {
-	h1, input[type=text], button.btn {
+	h1, input[type=text], #body button.btn {
 		font-size: 4vw;
 		font-weight: bold;
 	}

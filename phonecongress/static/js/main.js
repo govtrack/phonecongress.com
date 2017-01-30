@@ -100,4 +100,18 @@ function onTopicSubmit() {
     alert("Pleae re-enter your address.");
     return;
   }
+
+  ajax_with_indicator({
+    method: "POST",
+    url: "/_action",
+    data: {
+      campaign: topic,
+      cd: geocode_data.cd
+    },
+    success: function(res) {
+      if (res.html)
+        show_modal_error(res.title, $("<div>").html(res.html));
+      //console.log(res);
+    }
+  })  
 }
