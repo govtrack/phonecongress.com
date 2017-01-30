@@ -18,9 +18,11 @@ $('#use-my-address').click(function() {
   modal_operation(function(operation_finished) {
     navigator.geolocation.getCurrentPosition(function(position) {
       // Sometimes it comes back with the MaxMind center of the U.S.
-      // Don't allow that.
+      // at 38, -97. Don't allow that. See http://fusion.net/story/287592/internet-mapping-glitch-kansas-farm/.
+      // We also see 37.09024, -95.71289 in the wild. So use a large
+      // enough tolerance.
       var dist_from_us_center = Math.pow(Math.pow(position.coords.latitude - 38, 2) + Math.pow(position.coords.longitude - -97, 2), .5);
-      if (dist_from_us_center < 1) {
+      if (dist_from_us_center < 2.5) {
         operation_finished();
         alert("Your location is not available.");
         return;
