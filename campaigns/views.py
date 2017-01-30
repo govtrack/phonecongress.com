@@ -49,6 +49,8 @@ def geocode(request):
   state = result["address_components"].get("state")
   if state not in state_apportionment:
     return JsonResponse({'status':'error', 'message': 'The location does not seem to be in the United States.'})
+  if "fields" not in result:
+    return JsonResponse({'status':'error', 'message': 'We could not determine the congressional district for that location.'})
   dist = result["fields"]["congressional_district"]["district_number"]
   if dist in (98, 99): dist = 0
   if (state_apportionment[state] in ("T", 1) and dist != 0) \
@@ -102,4 +104,3 @@ def get_action(request):
       'We do not have any actions you can take for that topic. Sorry!!'})
 
   return JsonResponse(action)
-  
