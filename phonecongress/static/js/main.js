@@ -138,12 +138,25 @@ function onTopicSubmit() {
       //console.log(res);
       $('#topic-go').hide();
       $('#homepage-action').fadeIn();
-      $('#homepage-action>div').html(res.html);
+      $('#homepage-action>div.body').html(res.html);
     }
-  })  
+  })
 }
 
 function reset_topic() {
    $('#homepage-action').hide();
    $('#topic-go').show();
 }
+
+$('#i-did-it').click(function() {
+  var topic = $('#topic').val();
+  ga('send', 'event', 'Goal', 'completed-action', 'topic:'+topic);
+  reset_topic();
+  alert("Awesome!!")
+});
+
+$('#i-didnt-do-it').click(function() {
+  var topic = $('#topic').val();
+  ga('send', 'event', 'Interactions', 'didntdoit', 'topic:'+topic);
+  reset_topic();
+});
