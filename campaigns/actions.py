@@ -71,6 +71,17 @@ def find_legislators(filter_func):
     if filter_func(legislator):
       yield legislator
 
+call_congress_tips = """
+  If you have a brief personal story, say it now. Just **one sentence** about
+  how this issue affects your life is enough to show the staffer that the
+  issue means something to you. It's also **OK** to skip the personal story.
+
+  The staffer may ask for your name and address so that they can make a
+  note of your call. After that, just say _Thank you_ and you are done!
+  Your goal is to be counted, so a quick and courteous call like this is
+  all it takes. If you get voicemail, leave your name and address in your message.
+"""
+
 def congress_representative(action_type, action, user):
   # Does the user have a representative?
   def find_rep(legislator):
@@ -89,13 +100,24 @@ def congress_representative(action_type, action, user):
     return None
 
   # Render the action body template.
+  template = """
+  {{cta}}
+
+  Here's what you need to do. Call {{rep.name.full}}
+  at {{tel_link}}. A staff member in the representative's office will
+  probably pick up the phone. Say:
+
+  > Hi, I'm a resident of {% firstof user.city "[say the city you live in]" %}
+  > and I would like Representative {{rep.name.last}} to {{ask}}.
+  """ + call_congress_tips
+
   return {
     "priority": 441,
-    "title": action["title"],
-    "html": render_commonmark_template(action["body"], {
+    "html": render_commonmark_template(template, {
+      "cta": action["cta"],
+      "ask": action["ask"],
       "user": user,
       "rep": rep,
-      "rep_name": rep["name"]["full"],
       "tel_link": mark_safe("<a href='tel:+1" + html.escape(rep["term"]["phone"]) + "'>" + html.escape(rep["term"]["phone"]) + "</a>")
     })
   }
@@ -113,11 +135,26 @@ def congress_senators(action_type, action, user):
     return None
 
   # Render the action body template.
-  template = Template(action["body"])
+  template = """
+  {{cta}}
+
+  A phone call guide follows for each of your senators.
+
+  {% for senator in senators %}#{{forloop.counter}}: Call {{senator.name.full}}
+  at {{senator.tel_link}}. A staff member in the senator's office will probably
+  pick up the phone. Say:
+
+  > Hi, I'm a resident of {% firstof user.city "[say the city you live in]" %} and I would like
+  > Senator {{senator.name.last}} to {{ask}}.
+  """ \
+  + call_congress_tips \
+  + "\n\n{% endfor %}"
+
   return {
     "priority": 100,
-    "title": action["title"],
-    "html": render_commonmark_template(action["body"], {
+    "html": render_commonmark_template(template, {
+      "cta": action["cta"],
+      "ask": action["ask"],
       "user": user,
       "senators": [{
         "name": senator["name"],
