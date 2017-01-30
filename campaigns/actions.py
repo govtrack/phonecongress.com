@@ -164,6 +164,55 @@ def congress_senators(action_type, action, user):
     })
   }
 
+def congress_rep_and_senators(action_type, action, user):
+  # Does the user have a representative?
+  def find_rep(legislator):
+    term = legislator['term']
+    if     term['type'] == 'rep' \
+       and term['state'] == user['cd'][0:2] \
+       and term['district'] == int(user['cd'][2:]):
+       return True
+    if     term['type'] == 'sen' \
+       and term['state'] == user['cd'][0:2]:
+       return True
+  legislators = list(find_legislators(find_rep))
+  if len(legislators) == 0:
+    return None
+  legislators.sort(key = lambda x : x["term"]["type"]) # group senators together
+
+  # Render the action body template.
+  template = """
+  {{cta}}
+
+  Here are the phone numbers for your representative and senators. Information about
+  how to call is below.
+
+  {% for legislator in legislators %}#{{forloop.counter}}: {{legislator.name.full}}'s
+  DC office phone number is {{legislator.tel_link}}.
+
+  {% endfor %}
+
+  When you call each, a staff member will probably pick up the phone. Then say:
+
+  > Hi, I'm a resident of {% firstof user.city "[say the city you live in]" %}
+  > and I would like the [senator or representative] to {{ask}}.
+  """ \
+  + call_congress_tips
+
+  return {
+    "priority": 100,
+    "html": render_commonmark_template(template, {
+      "cta": action["cta"],
+      "ask": action["ask"],
+      "user": user,
+      "legislators": [{
+        "name": legislator["name"],
+        "tel_link": mark_safe("<a href='tel:+1" + html.escape(legislator["term"]["phone"]) + "'>" + html.escape(legislator["term"]["phone"]) + "</a>")
+      }
+      for legislator in legislators]
+    })
+  }
+
 def build_legislator_name(p, t, mode):
   # Based on:
   # https://github.com/govtrack/govtrack.us-web/blob/master/person/name.py
