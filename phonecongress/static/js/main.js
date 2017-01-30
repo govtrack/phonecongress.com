@@ -17,6 +17,17 @@ $('#use-my-address').click(function() {
   ga('send', 'event', 'Interactions', 'location', 'geolocation');
   modal_operation(function(operation_finished) {
     navigator.geolocation.getCurrentPosition(function(position) {
+      // Sometimes it comes back with the MaxMind center of the U.S.
+      // Don't allow that.
+      var dist_from_us_center = Math.pow(Math.pow(position.coords.latitude - 38, 2) + Math.pow(position.coords.longitude - -97, 2), .5);
+      if (dist_from_us_center < 1) {
+        operation_finished();
+        alert("Your location is not available.");
+        return;
+      }
+
+      // Pass the location to the backend to get the congressional
+      // district.
       geocode({
         longitude: position.coords.longitude,
         latitude: position.coords.latitude
