@@ -35,7 +35,11 @@ h1 {
 }
 
 #use-my-address {
+	display: inline-block;
 	margin-top: .5em;
+	padding: 3px 4px 0 4px;
+	border-radius: 10px;
+	background-color: rgba(230,230,230, .66);
 }
 
 #body #homepage-district p {
