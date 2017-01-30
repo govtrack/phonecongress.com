@@ -3,6 +3,12 @@ $('#body').css({
   minHeight: $(window).height() - $('header').outerHeight() - $('footer').outerHeight() - 1
 });
 
+$(function(){
+  // Show "phone's" if it's a phone.
+  $('#use-my-address .phone').toggle($.browser.mobile);
+});
+
+// Use My Address click handler.
 $('#use-my-address').click(function() {
   if (!("geolocation" in navigator)) {
     alert("Location is not available.");
