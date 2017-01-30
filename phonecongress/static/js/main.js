@@ -41,6 +41,12 @@ function geocode(data, go_next) {
   })
 }
 
+function reset_address() {
+  $('#homepage-district').hide();
+  $('#homepage-address').show();
+  reset_topic();
+}
+
 $(function() {
   // Have existing geocode info?
   var res = localStorage.getItem("geocode");
@@ -95,12 +101,17 @@ function onHasGeocode(geocode) {
     + parseInt(geocode.cd.substring(2)));
 }
 
-$('#topic').click(function() {
+$('#topic').change(function() {
+  // Update URL.
   var topic = $('#topic').val();
   if (topic == "")
     history.replaceState(null, null, "#")
   else
     history.replaceState(null, null, "#topic=" + topic)
+
+  // If a topic was already shown, update it.
+  if (topic && $('#homepage-action').is(":visible"))
+    onTopicSubmit();
 });
 
 function onTopicSubmit() {
@@ -124,9 +135,15 @@ function onTopicSubmit() {
       cd: geocode_data.cd
     },
     success: function(res) {
-      if (res.html)
-        show_modal_error(res.title, $("<div>").html(res.html));
       //console.log(res);
+      $('#topic-go').hide();
+      $('#homepage-action').fadeIn();
+      $('#homepage-action>div').html(res.html);
     }
   })  
+}
+
+function reset_topic() {
+   $('#homepage-action').hide();
+   $('#topic-go').show();
 }

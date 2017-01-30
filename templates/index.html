@@ -16,7 +16,7 @@
 
 	<p>Based on: <span class="address"></span>
 	<br>
-		<a href="#" onclick="$('#homepage-district').hide(); $('#homepage-address').show(); return false;">Change</a>
+		<a href="#" onclick="reset_address(); return false;">Change</a>
 		| <a id="district-link" href="#">See on a Map</a>
 	</p>
 </div>
@@ -33,5 +33,11 @@
 
 	<button id="topic-go" class="btn btn-success" style="display: block; margin-top: 5px;">Get Instructions &raquo;</button>
 </div>
+
+<div id="homepage-action" style="display: none">
+	<div>
+	</div>
+</div>
+
 
 {% endblock %}
