@@ -77,8 +77,39 @@ function show_modal_confirm(title, question, verb, yes_callback, cancel_callback
   return false; // handy when called from onclick
 }
 
-var ajax_num_executing_requests = 0;
+var modal_operation_indicator_count = 0;
+function modal_operation(operation_func, operation_args) {
+  // Increment the counter of active operations.
+  modal_operation_indicator_count++;
+
+  // Show the loading indicator after a short wait if any operation
+  // is still in progress.
+  setTimeout(function() {
+    if (modal_operation_indicator_count == 0)
+      return;
+    $('#ajax_loading_indicator div.message').text("Loading..."); //reset
+    $('#ajax_loading_indicator').fadeIn()
+  }, 100);
+
+  function operation_finished() {
+    // Decrement counter of number of parallel operations.
+    modal_operation_indicator_count--;
+
+    // Is this the last one to finish? If not, return.
+    if (modal_operation_indicator_count != 0) return;
+
+    // stop() prevents an ongoing fade from causing the thing to be shown
+    // again after this call.
+    $('#ajax_loading_indicator').stop(true).hide();
+  }
+
+  // Kick off the operation. It must call operation_finished when it
+  // is done.
+  operation_func(operation_finished, operation_args);
+}
+
 function ajax_with_indicator(options) {
+modal_operation(function(operation_finished) {
   // If options.data is an instance of FormData, then
   // set some jQuery.ajax settings for it to work.
   // FormData allows the caller to upload files.
@@ -108,33 +139,6 @@ function ajax_with_indicator(options) {
     }
   }
 
-  // Show the loading indicator after a short wait if the AJAX operation
-  // is still in progress.
-  setTimeout(function() {
-    if (ajax_num_executing_requests == 0)
-      return;
-    $('#ajax_loading_indicator div.message').text("Loading..."); //reset
-    $('#ajax_loading_indicator').fadeIn()
-  }, 100);
-  function hide_loading_indicator(success) {
-    // Decrement counter of number of parallel pending ajax requests.
-    ajax_num_executing_requests--;
-
-    // Is this the last one to finish? If not, return.
-    if (ajax_num_executing_requests != 0) return;
-
-    // If this was on success and keep_indicator_forever is true, then
-    // we don't clear the loading indicator. This is useful when the
-    // success function always initiates a page reload, to prevent the
-    // flickr of the loading indicator clearing and then the page reloading.
-    if (success && options.keep_indicator_forever)
-      return;
-    
-    // stop() prevents an ongoing fade from causing the thing to be shown
-    // again after this call.
-    $('#ajax_loading_indicator').stop(true).hide();
-  }
-
   // Make a function that disables/re-enables specified controls.
   function disable_enable_controls(state) {
     if (!options.controls) return;
@@ -149,7 +153,13 @@ function ajax_with_indicator(options) {
   options.success = function(data) {
     var is_error = (data.status == "error");
 
-    hide_loading_indicator(!is_error);
+    // If this was on success and keep_indicator_forever is true, then
+    // we don't clear the loading indicator. This is useful when the
+    // success function always initiates a page reload, to prevent the
+    // flickr of the loading indicator clearing and then the page reloading.
+    if (is_error || !options.keep_indicator_forever)
+      operation_finished(); // clears the modal loading indicator
+
     disable_enable_controls(false);
 
     if (options.complete)
@@ -161,7 +171,7 @@ function ajax_with_indicator(options) {
   };
 
   options.error = function(jqxhr) {
-    hide_loading_indicator(false);
+    operation_finished(); // clears the modal loading indicator
     disable_enable_controls(false);
 
     if (options.complete)
@@ -183,11 +193,10 @@ function ajax_with_indicator(options) {
     }
   };
 
-  ajax_num_executing_requests++;
   disable_enable_controls(true);
 
   $.ajax(options);
-
+});
   return false; // handy when called from onclick
 }
 

@@ -9,11 +9,21 @@ $('#use-my-address').click(function() {
     return;
   }
   ga('send', 'event', 'Interactions', 'location', 'geolocation');
-  navigator.geolocation.getCurrentPosition(function(position) {
-    geocode({
-      longitude: position.coords.longitude,
-      latitude: position.coords.latitude
-      });
+  modal_operation(function(operation_finished) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      geocode({
+        longitude: position.coords.longitude,
+        latitude: position.coords.latitude
+        });
+      operation_finished(); // do this after we start the geocode ajax call so that the modal stays up
+    }, function(err) {
+      operation_finished();
+      alert("Your location is not available.");
+    }, {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 15000
+    });
   });
 })
 
