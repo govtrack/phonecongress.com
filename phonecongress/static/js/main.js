@@ -8,6 +8,7 @@ $('#use-my-address').click(function() {
     alert("Location is not available.");
     return;
   }
+  ga('send', 'event', 'Interactions', 'location', 'geolocation');
   navigator.geolocation.getCurrentPosition(function(position) {
     geocode({
       longitude: position.coords.longitude,
@@ -35,6 +36,7 @@ $(function() {
   var res = localStorage.getItem("geocode");
   if (res) {
     try {
+      ga('send', 'event', 'Interactions', 'location', 'returning-user');
       onHasGeocode(JSON.parse(res));
     } catch (ex) {
     }
@@ -62,6 +64,7 @@ function submit_address() {
     alert("Enter your home address so we can find who represents you in Congress.");
     return;
   }
+  ga('send', 'event', 'Interactions', 'location', 'address');
   geocode({
     address: address
   }, true);
@@ -100,6 +103,8 @@ function onTopicSubmit() {
     alert("Pleae re-enter your address.");
     return;
   }
+
+  ga('send', 'event', 'Interactions', 'get-instructions', 'topic:'+topic);
 
   ajax_with_indicator({
     method: "POST",

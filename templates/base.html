@@ -5,14 +5,21 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- metadata you need to fill in -->
-
         <title>PhoneCongress.com - Tell Congress what you think</title>
 
         <meta property="og:title" content="PhoneCongress.com" />
 
         <meta name="description" content="Phone your representative and senators in the U.S. Congress.">
 
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+          ga('create', 'UA-1190841-6', 'auto');
+          ga('send', 'pageview');
+        </script>
+        
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" integrity="sha256-VBrFgheoreGl4pKmWgZh3J23pJrhNlSUOBek+8Z2Gv0=" crossorigin="anonymous">
@@ -57,7 +64,7 @@
           <div class="modal-body">
             <h5>Privacy Policy</h5>
 
-            <p>PhoneCongress.com collects typical non-personal information needed to maintain a healthy website, such as your IP address, web browser, and referral URL. We do not store your home address on our servers, but it is stored in your browser.</p>
+            <p>PhoneCongress.com collects typical non-personal information needed to maintain a healthy website, such as your IP address, web browser, and referral URL. We also ask for your home address or location to determine your congressional district. We do not store your home address or location on our servers, but it is stored in your browser.</p>
 
             <p>This site collects the same information whether or not your browser sends a Do Not Track header. When you visit this website, other parties whose resources we have embeded may be collecting information about you as well. We avoid embedding resources that have egregious tracking policies.</p>
 
@@ -82,17 +89,5 @@
 
         {% block scripts %}
         {% endblock %}
-
-        <script>
-        var ga_account_id = 'UA-XXXXX-X';
-        if (ga_account_id != 'UA-XXXXX-X') {
-            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-            e.src='//www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create',ga_account_id);ga('send','pageview');
-        }
-        </script>
     </body>
 </html>
