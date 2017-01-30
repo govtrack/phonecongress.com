@@ -11,7 +11,8 @@ state_names = {"AL":"Alabama", "AK":"Alaska", "AS":"American Samoa", "AZ":"Arizo
 from .models import Campaign
 
 def homepage(request):
-  active_campaigns = Campaign.objects.filter(active=True).order_by('-created')
+  active_campaigns = list(Campaign.objects.filter(active=True))
+  active_campaigns.sort(key = lambda c : (c.extra.get("priority") or 0, c.created))
   return render(request, "index.html", { 'campaigns': active_campaigns })
 
 @csrf_exempt

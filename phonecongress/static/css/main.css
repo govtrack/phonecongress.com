@@ -39,7 +39,7 @@ h1 {
 }
 
 #body #homepage-district p {
-	margin: -5px;
+	margin: 0 -5px 0 -5px;
 	padding: 5px;
 	border-radius: 10px;
 	background-color: rgba(230,230,230, .66);
@@ -83,4 +83,8 @@ h1 {
 	padding: 15px;
 	border-radius: 10px;
 	background-color: rgba(240,240,250, .75);
+}
+
+#homepage-action .body blockquote {
+	border-left: 2px solid #005;
 }
