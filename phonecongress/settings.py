@@ -52,7 +52,7 @@ ADMINS = environment.get("admins", [])
 # Set ALLOWED_HOSTS from the host environment. If it has a port, strip it.
 # The port is used in SITE_ROOT_URL must must be removed from ALLOWED_HOSTS.
 ALLOWED_HOSTS = [environment["host"].split(':')[0]]
-if DEBUG: ALLOWED_HOSTS = None # skip this when debugging esp because we want both localhost & 127.0.0.1 to work
+if DEBUG: ALLOWED_HOSTS = ["*"] # skip this when debugging esp because we want both localhost & 127.0.0.1 to work
 
 # allauth requires the use of the sites framework.
 SITE_ID = 1
@@ -139,7 +139,7 @@ AUTH_USER_MODEL = primary_app + '.User'
 LOGIN_REDIRECT_URL = "/"
 AUTHENTICATION_BACKENDS = [
 	'django.contrib.auth.backends.ModelBackend',
-	'allauth.account.auth_backends.AuthenticationBackend', # allauth
+	#'allauth.account.auth_backends.AuthenticationBackend', # allauth
 	]
 ACCOUNT_ADAPTER = primary_app + '.good_settings_helpers.AllauthAccountAdapter'
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
@@ -154,8 +154,8 @@ ACCOUNT_PASSWORD_MIN_LENGTH = (4 if DEBUG else 6) # in debugging, allow simple p
 
 # improve how the allauth forms are rendered using django-bootstrap forms,
 # in combination with a monkeypatch run elsewhere
-import bootstrap3.templatetags.bootstrap3
-ALLAUTH_FORM_RENDERER = bootstrap3.templatetags.bootstrap3.bootstrap_form
+#import bootstrap3.templatetags.bootstrap3
+#ALLAUTH_FORM_RENDERER = bootstrap3.templatetags.bootstrap3.bootstrap_form
 
 # Use an Sqlite database at local/db.sqlite, until other database
 # settings have been set in the environment.
