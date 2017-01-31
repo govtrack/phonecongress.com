@@ -57,7 +57,7 @@ def geocode(request):
   dist = result["fields"]["congressional_district"]["district_number"]
   if dist in (98, 99): dist = 0
   if (state_apportionment[state] in ("T", 1) and dist != 0) \
-   or (state_apportionment[state] != "T" and not (1 <= dist <= state_apportionment[state])):
+   or (state_apportionment[state] not in ("T", 1) and not (1 <= dist <= state_apportionment[state])):
     raise ValueError("Hmm. We got back invalid data. " + repr(request.POST) + " -- " + repr(info))
   cd = "%s%02d" % (state, dist)
 
