@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 
 import json
@@ -9,11 +9,25 @@ state_apportionment = {'AL': 7, 'AK': 1, 'AS': 'T', 'AZ': 9, 'AR': 4, 'CA': 53, 
 state_names = {"AL":"Alabama", "AK":"Alaska", "AS":"American Samoa", "AZ":"Arizona", "AR":"Arkansas", "CA":"California", "CO":"Colorado", "CT":"Connecticut", "DE":"Delaware", "DC":"District of Columbia", "FL":"Florida", "GA":"Georgia", "GU":"Guam", "HI":"Hawaii", "ID":"Idaho", "IL":"Illinois", "IN":"Indiana", "IA":"Iowa", "KS":"Kansas", "KY":"Kentucky", "LA":"Louisiana", "ME":"Maine", "MD":"Maryland", "MA":"Massachusetts", "MI":"Michigan", "MN":"Minnesota", "MS":"Mississippi", "MO":"Missouri", "MT":"Montana", "NE":"Nebraska", "NV":"Nevada", "NH":"New Hampshire", "NJ":"New Jersey", "NM":"New Mexico", "NY":"New York", "NC":"North Carolina", "ND": "North Dakota", "MP":"Northern Mariana Islands", "OH":"Ohio", "OK":"Oklahoma", "OR":"Oregon", "PA":"Pennsylvania", "PR":"Puerto Rico", "RI":"Rhode Island", "SC":"South Carolina", "SD":"South Dakota", "TN":"Tennessee", "TX":"Texas", "UT":"Utah", "VT":"Vermont", "VI":"Virgin Islands", "VA":"Virginia", "WA":"Washington", "WV":"West Virginia", "WI":"Wisconsin", "WY":"Wyoming", "DK": "Dakota Territory", "PI": "Philippines", "OL": "Territory of Orleans"}
 
 from .models import Campaign
+from .actions import get_campaign_from_key
 
 def homepage(request):
   active_campaigns = list(Campaign.objects.filter(active=True))
   active_campaigns.sort(key = lambda c : (c.extra.get("priority") or 0, c.created))
   return render(request, "index.html", { 'campaigns': active_campaigns })
+
+def auto_campaign(request, campaign_key):
+  campaign = get_campaign_from_key(campaign_key)
+  if not campaign: raise Http404()
+  return render(request, "index.html", {
+    'title': campaign['title'],
+    'campaign_key': campaign_key,
+    'campaigns': [{
+      'id': c['key'],
+      'title': c['title'],
+    }
+    for c in campaign["campaigns"]],
+  })
 
 @csrf_exempt
 def geocode(request):
@@ -92,7 +106,9 @@ def ordinal_html(value):
 def get_action(request):
   # Get the campaign.
   try:
-    campaign = Campaign.objects.get(active=True, id=request.POST.get("campaign"))
+    campaign = get_campaign_from_key(request.POST.get("campaign", ""))
+    if not campaign:
+      campaign = Campaign.objects.get(active=True, id=request.POST.get("campaign"))
     user = json.loads(request.POST["user"])
   except:
     return JsonResponse({'status':'error', 'message': 'Invalid parameters.'})

@@ -22,9 +22,9 @@
 </div>
 
 <div id="homepage-topic">
-	<h1>I want to phone Congress about...</h1>
+	<h1>I want to phone Congress about {{title}}...</h1>
 
-	<select id="topic" class="form-control">
+	<select id="topic" class="form-control" data-topic-root="{{campaign_key}}">
 		<option value="">(Select Topic)</option>
 		{% for campaign in campaigns %}
 			<option value="{{campaign.id}}">{{campaign.title}}</option>

@@ -144,8 +144,15 @@ function onTopicSubmit() {
     return;
   }
 
+  // Add the auto-campaign prefix.
+  var prefix = $('#topic').data("topic-root");
+  if (prefix)
+    topic = prefix + "/" + topic;
+
+  // Track event.
   ga('send', 'event', 'Interactions', 'get-instructions', 'topic:'+topic);
 
+  // Get call script.
   ajax_with_indicator({
     method: "POST",
     url: "/_action",

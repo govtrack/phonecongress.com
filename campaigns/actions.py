@@ -1,6 +1,84 @@
 from django.template import Template, Context
 from django.utils.safestring import mark_safe
+
 import html
+import re
+
+from .models import ActionType, Campaign
+
+# CHOOSE THE BEST ACTION FOR A USER
+
+def select_action(actions, user_props):
+    # Choose the best Action for a user from this congressional
+    # district.
+    actions = [x for x in actions if x is not None]
+    if len(actions) == 0:
+      return None
+    actions.sort(key = lambda action : action["priority"])
+    return actions[0]
+
+# DYNAMIC CAMPAIGNS
+
+class AutoCampaign:
+  def __init__(self, actions):
+    self.actions = actions
+    self.extra = { }
+  def get_action(self, user_props):
+    return select_action(
+      [func(None, action_spec, user_props)
+              for func, action_spec in self.actions],
+      user_props)
+
+def get_campaign_from_key(campaign_key):
+  # Loads automatic dynamically-generated campaign info.
+  m = re.match(r"^congress/bills/[^/]+/(\d+)(?:/(support|oppose))?$", campaign_key)
+  if m:
+    return campaign_for_bill(int(m.group(1)), m.group(2))
+  return None
+
+def campaign_for_bill(govtrack_bill_id, support_oppose):
+  try:
+    data = load_json_from_url("https://www.govtrack.us/api/v2/bill/%d" % govtrack_bill_id)
+  except:
+    return None
+
+  if not data["is_alive"]:
+    return None
+
+  if not support_oppose:
+    return {
+      "title": data["title"],
+      "campaigns": [
+        {
+          "key": "support",
+          "title": "Support " + data["title"],
+        },
+        {
+          "key": "oppose",
+          "title": "Oppose " + data["title"],
+        },
+      ]
+    }
+  else:
+    ask = (("support " + data["title"])
+          if support_oppose == "support"
+          else ("oppose " + data["title"]))
+    if data["current_chamber"] == "house":
+      return AutoCampaign([
+          (congress_representative, {
+            "cta": "Call your representative to tell them you %s this bill." % support_oppose,
+            "ask": ask,
+          })])
+    if data["current_chamber"] == "senate":
+      return AutoCampaign([
+          (congress_senators, {
+            "cta": "Call your senators to tell them you %s this bill." % support_oppose,
+            "ask": ask,
+          })])
+    return AutoCampaign([])
+
+
+# ACTION TYPE IMPLEMENTATIONS
 
 def render_commonmark_template(template, context):
   # Render a CommonMark template to HTML.
@@ -43,12 +121,6 @@ def render_commonmark_template(template, context):
   return Template(template).render(Context(context))
 
 legislator_data = None
-
-def load_yaml_from_url(url):
-  import requests, rtyaml
-  r = requests.get(url)
-  r = rtyaml.load(r.content)
-  return r
 
 def find_legislators(filter_func):
   # Load the congress-legislators/legislators-current YAML data.
@@ -213,6 +285,8 @@ def congress_rep_and_senators(action_type, action, user):
     })
   }
 
+## LEGISLATIVE UTILS
+
 def build_legislator_name(p, t, mode):
   # Based on:
   # https://github.com/govtrack/govtrack.us-web/blob/master/person/name.py
@@ -259,4 +333,18 @@ def build_legislator_name(p, t, mode):
     return lastname + ', ' + firstname + ' (' + title + ')' + role
   else:
     raise ValueError(mode)
+
+## HTTP UTILS
+
+def load_json_from_url(url):
+  import requests, json
+  r = requests.get(url)
+  r = json.loads(r.content.decode("utf8"))
+  return r
+
+def load_yaml_from_url(url):
+  import requests, rtyaml
+  r = requests.get(url)
+  r = rtyaml.load(r.content)
+  return r
 

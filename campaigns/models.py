@@ -20,16 +20,11 @@ class Campaign(models.Model):
     return self.title + " (by " + str(self.owner) + ")"
 
   def get_action(self, user_props):
-    # Choose the best Action for a user from this congressional
-    # district.
+    from .actions import select_action
     actions = [
       action.action_type.render(action, user_props)
       for action in self.actions.all()]
-    actions = [x for x in actions if x is not None]
-    actions.sort(key = lambda action : action["priority"])
-    if len(actions) == 0:
-      return None
-    return actions[0]
+    return select_action(actions, user_props)
 
 class ActionType(models.Model):
   """A type of Action that a user can take. ActionTypes are immutable since they are associated with Actions that users have taken."""
