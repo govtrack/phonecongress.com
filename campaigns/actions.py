@@ -151,7 +151,9 @@ call_congress_tips = """
   The staffer may ask for your name and address so that they can make a
   note of your call. After that, just say _Thank you_ and you are done!
   Your goal is to be counted, so a quick and courteous call like this is
-  all it takes. If you get voicemail, leave your name and address in your message.
+  all it takes.
+
+  If you get voicemail, leave your name and address in your message.
 """
 
 def congress_representative(action_type, action, user):
@@ -173,10 +175,12 @@ def congress_representative(action_type, action, user):
 
   # Render the action body template.
   template = """
+  {{intro}}
+
   {{cta}}
 
-  Here's what you need to do. Call {{rep.name.full}}
-  at {{tel_link}}. A staff member in the representative's office will
+  Here's what you need to do. **Call {{rep.name.full}}
+  at {{tel_link}}.** A staff member in the representative's office will
   probably pick up the phone. Say:
 
   > Hi, I'm a resident of {% firstof user.city "[say the city you live in]" %}
@@ -208,28 +212,40 @@ def congress_senators(action_type, action, user):
 
   # Render the action body template.
   template = """
+  {{intro}}
+
   {{cta}}
 
   A phone call guide follows for each of your senators.
 
-  {% for senator in senators %}#{{forloop.counter}}: Call {{senator.name.full}}
-  at {{senator.tel_link}}. A staff member in the senator's office will probably
-  pick up the phone. Say:
+  {% for senator in senators %}
+  ***
+
+  <b>#{{forloop.counter}}: Call {{senator.name.full}}
+  at {{senator.tel_link}}.</b>
+
+  A staff member in the senator's office will probably pick up the phone. Say:
 
   > Hi, I'm a resident of {% firstof user.city "[say the city you live in]" %} and I would like
   > Senator {{senator.name.last}} to {{ask}}.
   """ \
   + call_congress_tips \
+  + """
+  If you would like to write a letter instead, visit [{{senator.name.last}}&rsquo;s homepage]({{senator.website}})
+  and fill out their contact form.
+  """ \
   + "\n\n{% endfor %}"
 
   return {
     "priority": 100,
     "html": render_commonmark_template(template, {
+      "intro": action.get("intro"),
       "cta": action["cta"],
       "ask": action["ask"],
       "user": user,
       "senators": [{
         "name": senator["name"],
+        "website": senator["term"]["url"],
         "tel_link": mark_safe("<a href='tel:+1" + html.escape(senator["term"]["phone"]) + "'>" + html.escape(senator["term"]["phone"]) + "</a>")
       }
       for senator in senators]
@@ -259,8 +275,8 @@ def congress_rep_and_senators(action_type, action, user):
   Here are the phone numbers for your representative and senators. Information about
   how to call is below.
 
-  {% for legislator in legislators %}#{{forloop.counter}}: {{legislator.name.full}}'s
-  DC office phone number is {{legislator.tel_link}}.
+  {% for legislator in legislators %}<b>#{{forloop.counter}}: {{legislator.name.full}}'s
+  DC office phone number is {{legislator.tel_link}}.</b>
 
   {% endfor %}
 
