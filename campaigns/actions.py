@@ -159,6 +159,10 @@ call_congress_tips = """
 def congress_representative(action_type, action, user):
   # Does the user have a representative?
   def find_rep(legislator):
+    if action.get("id_in") and legislator["id"] not in action.get("id_in"):
+      return False
+    if action.get("id_not_in") and legislator["id"] in action.get("id_not_in"):
+      return False
     term = legislator['term']
     if     term['type'] == 'rep' \
        and term['state'] == user['cd'][0:2] \
@@ -201,6 +205,10 @@ def congress_representative(action_type, action, user):
 def congress_senators(action_type, action, user):
   # Does the user have a representative?
   def find_rep(legislator):
+    if action.get("id_in") and legislator["id"] not in action.get("id_in"):
+      return False
+    if action.get("id_not_in") and legislator["id"] in action.get("id_not_in"):
+      return False
     term = legislator['term']
     if     term['type'] == 'sen' \
        and term['state'] == user['cd'][0:2]:
@@ -255,6 +263,10 @@ def congress_senators(action_type, action, user):
 def congress_rep_and_senators(action_type, action, user):
   # Does the user have a representative?
   def find_rep(legislator):
+    if action.get("id_in") and legislator["id"] not in action.get("id_in"):
+      return False
+    if action.get("id_not_in") and legislator["id"] in action.get("id_not_in"):
+      return False
     term = legislator['term']
     if     term['type'] == 'rep' \
        and term['state'] == user['cd'][0:2] \
