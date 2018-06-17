@@ -1,8 +1,18 @@
 {% extends "base.html" %}
 
 {% block body %}
+
+<div id="splash">
+	<div class="container">
+		<h1>Here&rsquo;s how to call your representative and senators in Congress</h1>
+		<div id="deck">We&rsquo;ll figure out who represents you and give you their phone numbers and a script. It&rsquo;ll be easy!</div>
+	</div>
+</div>
+
+<div id="body" class="container">
+
 <div id="homepage-address">
-	<h1>I live at...</h1>
+	<h2>I live at...</h2>
 
 	<input id="address" class="form-control" type="text"
 		name="address"
@@ -12,17 +22,17 @@
 </div>
 
 <div id="homepage-district" style="display: none;">
-	<h1>I live in <span class="state"></span>&rsquo;s <span class="district"></span> Congressional District.</h1>
+	<h2>I live in <span class="state"></span>&rsquo;s <span class="district"></span> Congressional District.</h2>
 
 	<p>Based on: <span class="address"></span>
 	<br>
 		<a href="#" onclick="reset_address(); return false;">Change</a>
-		| <a id="district-link" href="#">See on a Map</a>
+		| <a id="district-link" href="#">Verify on a Map</a>
 	</p>
 </div>
 
 <div id="homepage-topic">
-	<h1>I want to phone Congress about {{title}}...</h1>
+	<h2>I want to phone Congress about {{title}}...</h2>
 
 	<select id="topic" class="form-control" data-topic-root="{{campaign_key}}">
 		<option value="">(Select Topic)</option>
@@ -31,17 +41,19 @@
 		{% endfor %}
 	</select>
 
-	<button id="topic-go" class="btn btn-success" style="display: block; margin-top: 5px;">Get Instructions &raquo;</button>
+	<button id="topic-go" class="btn btn-success" style="display: block;">Get Instructions &raquo;</button>
 </div>
 
 <div id="homepage-action" style="display: none">
-	<div class="body">
+	<h2 style="margin-top: 0">Instructions</h2>
+	<div class="script">
 	</div>
 	<div style="margin: 1em 0; text-align: right;">
-		<button id="i-did-it" class="btn btn-success">I Did It!</button>
+		<button id="i-did-it" class="btn btn-success" style="margin-right: 1em">I Did It!</button>
 		<button id="i-didnt-do-it" class="btn btn-default">I&rsquo;ll Do It Later</button>
 	</div>
 </div>
 
+</div>
 
 {% endblock %}

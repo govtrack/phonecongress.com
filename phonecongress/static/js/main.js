@@ -63,6 +63,7 @@ function geocode(data, go_next) {
 function reset_address() {
   $('#homepage-district').hide();
   $('#homepage-address').show();
+  localStorage.setItem('geocode', '');
   reset_topic();
 }
 
@@ -164,7 +165,7 @@ function onTopicSubmit() {
       //console.log(res);
       $('#topic-go').hide();
       $('#homepage-action').fadeIn();
-      $('#homepage-action>div.body').html(res.html);
+      $('#homepage-action>div.script').html(res.html);
     }
   })
 }
